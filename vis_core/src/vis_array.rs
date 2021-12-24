@@ -1,7 +1,7 @@
 
 use std::{thread, time};
 pub use super::*;
-pub use winit::{
+use winit::{
     event::*,
     event_loop::{ControlFlow, EventLoop},
     window::WindowBuilder,
@@ -99,6 +99,9 @@ impl VisualArray {
         
     }
 
+    pub fn access() {
+        todo!()
+    }
     pub fn swap(&mut self, state: &mut surface::State, window: &winit::window::Window, index_1: u32, index_2: u32) {
         //change color of first rectangle to indicate that it is being selected
         {
