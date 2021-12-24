@@ -1,9 +1,12 @@
-//wxtern crate vis_macros;
+#![feature(proc_macro)]
+
+extern crate vis_macros;
 extern crate vis_core;
 
 //use vis_macros::init;
 use vis_core::vis_array;
 use vis_core::surface;
+use winit::*;
 use winit::{
     event::*,
     event_loop::{ControlFlow, EventLoop},
@@ -27,11 +30,12 @@ fn create_rand_array(size: u16) -> Vec<u16> {
     
     arr
 }
-fn selection_sort(state: &mut vis_core::surface::State, window: &winit::window::Window, arr: &mut [u16], vis_arr: &mut vis_array::VisualArray) {
+#[vis_macros::main]
+fn selection_sort(arr: &mut [u16], vis_arr: &mut vis_array::VisualArray) {
     let mut min_idx;
     for i in 0..arr.len() {
-        vis_arr.change_color(state, window, i as u32, vis_array::Color::Green);
-        println!("{}", i);
+        vis_arr.change_color(&mut state, &mut window, i as u32, vis_array::Color::Green);
+        //println!("{}", i);
         min_idx = i;
         for j in (i+1)..arr.len() {
             if arr[min_idx] > arr[j] {
@@ -41,9 +45,9 @@ fn selection_sort(state: &mut vis_core::surface::State, window: &winit::window::
         let temp = arr[min_idx];
         arr[min_idx] = arr[i];
         arr[i] = temp;
-        vis_arr.swap(state, &window, min_idx as u32, i as u32);
+        vis_arr.swap(&mut state, &mut window, min_idx as u32, i as u32);
         
-        vis_arr.change_color(state, window, i as u32, vis_array::Color::White);
+        vis_arr.change_color(&mut state, &mut window, i as u32, vis_array::Color::White);
     }
     /*
     for i in 1..arr.len() {
@@ -52,17 +56,19 @@ fn selection_sort(state: &mut vis_core::surface::State, window: &winit::window::
         let mut j = i-1;
         while j >= 0 && key < arr[j] {
             vis_arr.swap(state, &window, (j+1) as u32, j as u32);
-            j-=1;
+            j = j - 1;
         }    
         vis_arr.swap(state, &window, (j+1) as u32, i as u32);
     }
     */
 }
 fn main() {
-    let mut arr = create_rand_array(500);
+    let mut arr = create_rand_array(100);
     let mut vis_arr = vis_array::VisualArray::new(&mut arr);
     vis_arr = vis_array::VisualArray::new(&mut arr);
+    selection_sort(&mut arr, &mut vis_arr);
     //init!(selection_sort(&mut arr, &mut vis_arr));
+    /*
     env_logger::init();
     let event_loop = EventLoop::new();
     let window = WindowBuilder::new()
@@ -111,6 +117,7 @@ fn main() {
             _ => {}
         };
     });
+    */
 }
 
 
