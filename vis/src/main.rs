@@ -1,74 +1,55 @@
-#![feature(proc_macro)]
 
 extern crate vis_macros;
 extern crate vis_core;
 
 //use vis_macros::init;
 use vis_core::vis_array;
-use vis_core::surface;
-use winit::*;
 use winit::{
     event::*,
     event_loop::{ControlFlow, EventLoop},
     window::WindowBuilder,
-    window::Window,
 };
-use rand::{thread_rng, Rng};
 
-fn create_rand_array(size: u16) -> Vec<u16> {
-    let mut arr = Vec::<u16>::new();
-    for i in 0..size {
-        arr.push((i as u16) + 1);
-    }
-    let mut rng = thread_rng();
-    for i in 0..size {
-        let s: usize = rng.gen_range(0..size-1).into();
-        let temp = arr[s];
-        arr[s] = arr[i as usize];
-        arr[i as usize] = temp;
-    }
-    
-    arr
-}
-#[vis_macros::main]
-fn selection_sort(arr: &mut [u16], vis_arr: &mut vis_array::VisualArray) {
+fn selection_sort(state: &mut vis_core::surface::State, vis_arr: &mut vis_core::vis_array::VisualArray) {
     let mut min_idx;
-    for i in 0..arr.len() {
-        vis_arr.change_color(&mut state, &mut window, i as u32, vis_array::Color::Green);
-        //println!("{}", i);
+    for i in 0..vis_arr.size {
+        vis_arr.change_color(state, i as u32, vis_array::Color::Green);
         min_idx = i;
-        for j in (i+1)..arr.len() {
-            if arr[min_idx] > arr[j] {
+        for j in (i+1)..vis_arr.size {
+            if vis_arr.access(min_idx) > vis_arr.access(j) {
                 min_idx = j;
             }
         }
-        let temp = arr[min_idx];
-        arr[min_idx] = arr[i];
-        arr[i] = temp;
-        vis_arr.swap(&mut state, &mut window, min_idx as u32, i as u32);
-        
-        vis_arr.change_color(&mut state, &mut window, i as u32, vis_array::Color::White);
-    }
-    /*
-    for i in 1..arr.len() {
-        let key = arr[i];
+        let temp = vis_arr.access(min_idx);
+        let value = vis_arr.access(i); 
+        vis_arr.change(min_idx, value);
+        vis_arr.change(i, temp);
+        vis_arr.swap(state, min_idx as u32, i as u32);
 
-        let mut j = i-1;
-        while j >= 0 && key < arr[j] {
-            vis_arr.swap(state, &window, (j+1) as u32, j as u32);
-            j = j - 1;
-        }    
-        vis_arr.swap(state, &window, (j+1) as u32, i as u32);
+        vis_arr.change_color(state, i as u32, vis_array::Color::White);
     }
-    */
+    vis_arr.finish(state);
+}
+
+fn bubble_sort(state: &mut vis_core::surface::State, vis_arr: &mut vis_core::vis_array::VisualArray) {
+    for i in 0..vis_arr.size-1 {
+        vis_arr.change_color(state, i as u32, vis_array::Color::Green);
+        for j in 0..vis_arr.size-i-1 {
+            if vis_arr.access(j) > vis_arr.access(j+1) {
+                let temp = vis_arr.access(j);
+                let temp2 = vis_arr.access(j+1);
+                vis_arr.change(j, temp2);
+                vis_arr.change(j+1, temp);
+                vis_arr.swap(state, j as u32, (j+1) as u32);    
+            }
+        }
+        vis_arr.change_color(state, i as u32, vis_array::Color::White);
+    }
 }
 fn main() {
-    let mut arr = create_rand_array(100);
-    let mut vis_arr = vis_array::VisualArray::new(&mut arr);
-    vis_arr = vis_array::VisualArray::new(&mut arr);
-    selection_sort(&mut arr, &mut vis_arr);
+    let mut vis_arr = vis_array::VisualArray::new(vis_array::create_rand_array(100));
+    //selection_sort(&mut vis_arr);
     //init!(selection_sort(&mut arr, &mut vis_arr));
-    /*
     env_logger::init();
     let event_loop = EventLoop::new();
     let window = WindowBuilder::new()
@@ -78,8 +59,10 @@ fn main() {
     
     let mut state = pollster::block_on(vis_core::surface::State::new(&window, &vis_arr.vertices, &vis_arr.indices));
 
+    let mut sorted: bool = false;
+
     event_loop.run(move |event, _, control_flow| {
-        *control_flow = ControlFlow::Wait;
+        *control_flow = ControlFlow::Poll;
 
          match event {
             Event::RedrawRequested(_) => {
@@ -91,7 +74,6 @@ fn main() {
                 }
             }
             Event::MainEventsCleared => {
-                selection_sort(&mut state, &window, &mut arr, &mut vis_arr);
                 window.request_redraw();
             }
             Event::WindowEvent {
@@ -112,12 +94,28 @@ fn main() {
                 WindowEvent::ScaleFactorChanged { new_inner_size, .. } => {
                     state.resize(**new_inner_size);
                 }
+                WindowEvent::KeyboardInput {
+                    input: KeyboardInput {
+                        state: ElementState::Pressed,
+                        virtual_keycode: Some(VirtualKeyCode::Space),
+                        ..
+                    },
+                    ..
+                } => { 
+                    if !sorted {
+                        selection_sort(&mut state, &mut vis_arr);
+                        sorted = true;
+                    } else {
+                        vis_arr.update(vis_array::create_rand_array(100));
+                        window.request_redraw();
+                        bubble_sort(&mut state, &mut vis_arr);
+                    }
+                }
                 _ => {}
             },
             _ => {}
         };
     });
-    */
 }
 
 

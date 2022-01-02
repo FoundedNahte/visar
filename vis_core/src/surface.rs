@@ -183,7 +183,12 @@ impl State {
             }
         );
         
-        self.render();
+        match self.render() {
+            Ok(_) => {},
+            Err(wgpu::SurfaceError::Lost) => self.resize(self.size),
+            Err(wgpu::SurfaceError::OutOfMemory) => panic!("Out of Memory"),
+            Err(e) => eprintln!("{:?}", e),
+        }
     }
 
     pub fn render(&mut self) -> Result<(), wgpu::SurfaceError> {

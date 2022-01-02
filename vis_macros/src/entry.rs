@@ -11,13 +11,8 @@ pub(crate) fn main(args: TokenStream, item: TokenStream) -> TokenStream {
         }
     };
     
-    let body_block = input.block.stmts.clone();
+    let body = &input.block;
     
-    let mut body = TokenStream::new();
-    for stmt in body_block.iter() {
-        body.extend(quote! { stmt }.into()); 
-    }
-    body = syn::parse(body); 
     let test = quote! {
         {
             env_logger::init();
