@@ -3,7 +3,8 @@ extern crate vis_macros;
 extern crate vis_core;
 
 //use vis_macros::init;
-use std::collections::HashMap;
+use std::str::FromStr;
+use clap::Parser;
 use vis_core::vis_array;
 use winit::{
     event::*,
@@ -169,8 +170,22 @@ fn bubble_sort(state: &mut vis_core::surface::State, vis_arr: &mut vis_core::vis
 
 // *********************************************************************************************
 // DRIVER FUNCTION
+#[derive(Parser, Debug)]
+#[clap(about, version, author)]
+struct Config {
+    // Which algorithm to use
+    #[clap(short, long)]
+    algo: String,
+
+    // Size of the array
+    #[clap(short, long, default_value_t = 100)]
+    size: u16,
+}
+
 fn main() {
-    let mut vis_arr = vis_array::VisualArray::new(vis_array::create_rand_array(100));
+    let args = Config::parse();
+
+    let mut vis_arr = vis_array::VisualArray::new(vis_array::create_rand_array(args.size));
     //selection_sort(&mut vis_arr);
     //init!(selection_sort(&mut arr, &mut vis_arr));
     env_logger::init();
@@ -181,11 +196,6 @@ fn main() {
         .unwrap();
     
     let mut state = pollster::block_on(vis_core::surface::State::new(&window, &vis_arr.vertices, &vis_arr.indices));
-
-    let rt = tokio::runtime::Builder::new_multi_thread()
-        .worker_threads(2)
-        .build()
-        .unwrap(); 
 
     let mut sorted: bool = false;
 
@@ -232,12 +242,30 @@ fn main() {
                 } => { 
                     if !sorted {
                         //handle = rt.spawn(selection_sort(&state, &vis_arr));
-                        radix_sort(&mut state, &mut vis_arr);
+                        let temp = &args.algo[..];
+                        match temp {
+                            "selection" => { selection_sort(&mut state, &mut vis_arr); },
+                            "oddeven" => { odd_even_sort(&mut state, &mut vis_arr); },
+                            "radix" => { radix_sort(&mut state, &mut vis_arr); },
+                            "insertion" => { insertion_sort(&mut state, &mut vis_arr); },
+                            "bubble" => { bubble_sort(&mut state, &mut vis_arr); },
+                            "shell" => { shell_sort(&mut state, &mut vis_arr); },
+                            _ => { panic!("Algorithm not available"); },
+                        }
                         sorted = true;
                     } else {
-                        vis_arr.update(&mut state, &vis_array::create_rand_array(100));
+                        vis_arr.update(&mut state, &vis_array::create_rand_array(args.size));
                         window.request_redraw();
-                        radix_sort(&mut state, &mut vis_arr);
+                        let temp = &args.algo[..];
+                        match temp {
+                            "selection" => { selection_sort(&mut state, &mut vis_arr); },
+                            "oddeven" => { odd_even_sort(&mut state, &mut vis_arr); },
+                            "radix" => { radix_sort(&mut state, &mut vis_arr); },
+                            "insertion" => { insertion_sort(&mut state, &mut vis_arr); },
+                            "bubble" => { bubble_sort(&mut state, &mut vis_arr); },
+                            "shell" => { shell_sort(&mut state,&mut vis_arr); },
+                            _ => { panic!("Algorithm not available"); },
+                        }
                         //handle = rt.spawn(bubble_sort(&state, &vis_arr));
                     }
                     //rt.block_on(handle);
