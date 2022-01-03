@@ -183,6 +183,9 @@ impl State {
             }
         );
         
+        self.num_vertices = vertices.len() as u32;
+        self.num_indices = indices.len() as u32;
+        
         match self.render() {
             Ok(_) => {},
             Err(wgpu::SurfaceError::Lost) => self.resize(self.size),
