@@ -39,5 +39,7 @@ Size (OPTIONAL):
 
 Takes a 16-bit unsigned integer.
 
+**Large sizes may cause the animation to freeze.**
+
 ## License
 [MIT](https://choosealicense.com/licenses/mit/)
