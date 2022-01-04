@@ -10,7 +10,7 @@ The executable can be downloaded in the "Releases" tab.
 Building Locally:
 
 ```bash
-cd vis
+cd visar
 cargo build --release
 cd ./target/release
 visar.exe --algo <ALGO> --size <SIZE>
