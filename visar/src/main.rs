@@ -1,20 +1,17 @@
 
-extern crate vis_macros;
-extern crate vis_core;
+extern crate visar_core;
 
-//use vis_macros::init;
-use std::str::FromStr;
 use clap::Parser;
-use vis_core::vis_array;
+use visar_core::vis_array;
 use winit::{
     event::*,
     event_loop::{ControlFlow, EventLoop},
     window::WindowBuilder,
 };
+// ******************************************************************************************
+// ODD EVEN SORT
 //
-//
-//
-fn odd_even_sort(state: &mut vis_core::surface::State, vis_arr: &mut vis_core::vis_array::VisualArray) {
+fn odd_even_sort(state: &mut visar_core::surface::State, vis_arr: &mut visar_core::vis_array::VisualArray) {
     let mut sorted = false;
     while !sorted {
         sorted = true;
@@ -39,19 +36,19 @@ fn odd_even_sort(state: &mut vis_core::surface::State, vis_arr: &mut vis_core::v
 // ******************************************************************************************
 // SHELL SORT
 //
-fn shell_sort(state: &mut vis_core::surface::State, vis_arr: &mut vis_core::vis_array::VisualArray) {
+fn shell_sort(state: &mut visar_core::surface::State, vis_arr: &mut visar_core::vis_array::VisualArray) {
     let incs = [1391376, 463792, 198768, 86961, 33936,
                         13776, 4592, 1968, 861, 336, 112, 48, 21, 
                         7, 3, 1];
     for k in 0..16 {
-        let mut h = incs[k];
+        let h = incs[k];
         let mut i = h;
         while i < vis_arr.size {
             let v = vis_arr.access(i);
             let mut j = i;
             while j >= h {
                 let temp = vis_arr.access(j-h);
-                if(temp > v) {
+                if temp > v {
                     vis_arr.set(state, j, temp);
                     j -= h;
                 } else {
@@ -70,7 +67,7 @@ fn shell_sort(state: &mut vis_core::surface::State, vis_arr: &mut vis_core::vis_
 // RADIX SORT (WITH COUNTING SORT)
 //
 
-fn count_sort(state: &mut vis_core::surface::State, vis_arr: &mut vis_core::vis_array::VisualArray, exp: u16) {
+fn count_sort(state: &mut visar_core::surface::State, vis_arr: &mut visar_core::vis_array::VisualArray, exp: u16) {
     let mut output: Vec<u16> = vec![0; vis_arr.size];
     let mut count = [0; 10];
     
@@ -98,7 +95,7 @@ fn count_sort(state: &mut vis_core::surface::State, vis_arr: &mut vis_core::vis_
     }
 
 }
-fn radix_sort(state: &mut vis_core::surface::State, vis_arr: &mut vis_core::vis_array::VisualArray) {
+fn radix_sort(state: &mut visar_core::surface::State, vis_arr: &mut visar_core::vis_array::VisualArray) {
     let m = match vis_arr.array.iter().max() {
         Some(value) => value.clone(),
         None => panic!("Empty Array"),
@@ -115,13 +112,13 @@ fn radix_sort(state: &mut vis_core::surface::State, vis_arr: &mut vis_core::vis_
 // *****************************************************************************************
 // INSERTION SORT
 //
-fn insertion_sort(state: &mut vis_core::surface::State, vis_arr: &mut vis_core::vis_array::VisualArray) {
+fn insertion_sort(state: &mut visar_core::surface::State, vis_arr: &mut visar_core::vis_array::VisualArray) {
     for i in 1..vis_arr.size {
         let key = vis_arr.access(i).clone();
         let mut j = i - 1;
         let mut temp = vis_arr.access(j).clone();
         while j >= 0 && temp > key {
-            vis_arr.swap(state, j, (j+1));
+            vis_arr.swap(state, j, j+1);
             if j == 0 {
                 break;
             } else {
@@ -136,7 +133,7 @@ fn insertion_sort(state: &mut vis_core::surface::State, vis_arr: &mut vis_core::
 // ******************************************************************************************
 // SELECTION SORT
 //
-fn selection_sort(state: &mut vis_core::surface::State, vis_arr: &mut vis_core::vis_array::VisualArray) {
+fn selection_sort(state: &mut visar_core::surface::State, vis_arr: &mut visar_core::vis_array::VisualArray) {
     let mut min_idx;
     for i in 0..vis_arr.size {
         vis_arr.change_color(state, i, vis_array::Color::Green);
@@ -156,7 +153,7 @@ fn selection_sort(state: &mut vis_core::surface::State, vis_arr: &mut vis_core::
 // ********************************************************************************************
 // BUBBLE SORT
 //
-fn bubble_sort(state: &mut vis_core::surface::State, vis_arr: &mut vis_core::vis_array::VisualArray) {
+fn bubble_sort(state: &mut visar_core::surface::State, vis_arr: &mut visar_core::vis_array::VisualArray) {
     for i in 0..vis_arr.size-1 {
         vis_arr.change_color(state, i, vis_array::Color::Green);
         for j in 0..vis_arr.size-i-1 {
@@ -186,8 +183,7 @@ fn main() {
     let args = Config::parse();
 
     let mut vis_arr = vis_array::VisualArray::new(vis_array::create_rand_array(args.size));
-    //selection_sort(&mut vis_arr);
-    //init!(selection_sort(&mut arr, &mut vis_arr));
+
     env_logger::init();
     let event_loop = EventLoop::new();
     let window = WindowBuilder::new()
@@ -195,7 +191,7 @@ fn main() {
         .build(&event_loop)
         .unwrap();
     
-    let mut state = pollster::block_on(vis_core::surface::State::new(&window, &vis_arr.vertices, &vis_arr.indices));
+    let mut state = pollster::block_on(visar_core::surface::State::new(&window, &vis_arr.vertices, &vis_arr.indices));
 
     let mut sorted: bool = false;
 
@@ -241,7 +237,6 @@ fn main() {
                     ..
                 } => { 
                     if !sorted {
-                        //handle = rt.spawn(selection_sort(&state, &vis_arr));
                         let temp = &args.algo[..];
                         match temp {
                             "selection" => { selection_sort(&mut state, &mut vis_arr); },
@@ -266,9 +261,7 @@ fn main() {
                             "shell" => { shell_sort(&mut state,&mut vis_arr); },
                             _ => { panic!("Algorithm not available"); },
                         }
-                        //handle = rt.spawn(bubble_sort(&state, &vis_arr));
                     }
-                    //rt.block_on(handle);
                 }
                 _ => {}
             },

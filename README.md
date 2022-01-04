@@ -1,14 +1,16 @@
 # Visar - A Sorting Visualizer in Rust
 
-
+![](https://github.com/FoundedNahte/visar/blob/main/example/selection.gif)
 
 ## Running
 
 Running Locally:
 
 ```bash
-cd vis
-cargo run --algo <ALGO> --size <SIZE>
+cd visar
+cargo build --release
+cd ./target/release
+vis.exe --algo <ALGO> --size <SIZE>
 ```
 
 ## Flags
@@ -24,7 +26,6 @@ Size (OPTIONAL):
 * Default = 100
 
 Takes a 16-bit unsigned integer.
-##
 
 ## License
 [MIT](https://choosealicense.com/licenses/mit/)

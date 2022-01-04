@@ -1644,7 +1644,7 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "5fecdca9a5291cc2b8dcf7dc02453fee791a280f3743cb0905f8822ae463b3fe"
 
 [[package]]
-name = "vis"
+name = "visar"
 version = "0.1.0"
 dependencies = [
  "bytemuck",
@@ -1655,14 +1655,13 @@ dependencies = [
  "log",
  "pollster",
  "rand",
- "vis_core",
- "vis_macros",
+ "visar_core",
  "wgpu",
  "winit",
 ]
 
 [[package]]
-name = "vis_core"
+name = "visar_core"
 version = "0.1.0"
 dependencies = [
  "bytemuck",
@@ -1674,15 +1673,6 @@ dependencies = [
  "rand",
  "wgpu",
  "winit",
-]
-
-[[package]]
-name = "vis_macros"
-version = "0.1.0"
-dependencies = [
- "proc-macro2",
- "quote",
- "syn",
 ]
 
 [[package]]

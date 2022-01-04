@@ -46,10 +46,10 @@ pub struct State {
 }
 
 impl State {
-    pub async fn new(window: &winit::window::Window, VERTICES: &[Vertex], INDICES: &[u16]) -> Self {
+    pub async fn new(window: &winit::window::Window, vertices: &[Vertex], indices: &[u16]) -> Self {
         let size = window.inner_size();
 
-        let num_vertices = VERTICES.len() as u32;
+        let num_vertices = vertices.len() as u32;
 
         let instance = wgpu::Instance::new(wgpu::Backends::all());
         let surface = unsafe { instance.create_surface(window) };
@@ -130,7 +130,7 @@ impl State {
         let vertex_buffer = device.create_buffer_init(
             &wgpu::util::BufferInitDescriptor {
                 label: Some("Vertex Buffer"),
-                contents: bytemuck::cast_slice(VERTICES),
+                contents: bytemuck::cast_slice(vertices),
                 usage: wgpu::BufferUsages::VERTEX,
             }
         );
@@ -138,12 +138,12 @@ impl State {
         let index_buffer = device.create_buffer_init(
             &wgpu::util::BufferInitDescriptor {
                 label: Some("Index Buffer"),
-                contents: bytemuck::cast_slice(INDICES),
+                contents: bytemuck::cast_slice(indices),
                 usage: wgpu::BufferUsages::INDEX,
             }
         );
 
-        let num_indices = INDICES.len() as u32;
+        let num_indices = indices.len() as u32;
 
         Self {
             surface,
