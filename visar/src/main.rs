@@ -8,6 +8,144 @@ use winit::{
     event_loop::{ControlFlow, EventLoop},
     window::WindowBuilder,
 };
+// *****************************************************************************************
+// QUICK SORT
+//
+fn partition(state: &mut visar_core::surface::State, vis_arr: &mut visar_core::vis_array::VisualArray, low: i32, high: i32) -> i32 {
+    let pivot = vis_arr.access(high as usize);
+    let mut i = low - 1;
+    for j in low..high {
+        if vis_arr.access(j as usize) <= pivot {
+            i += 1;
+            vis_arr.swap(state, i as usize, j as usize);
+        }
+    }
+    vis_arr.swap(state, (i+1) as usize, high as usize);
+
+    return i + 1;
+}
+
+fn quick_sort(state: &mut visar_core::surface::State, vis_arr: &mut visar_core::vis_array::VisualArray, low: i32, high: i32) {
+    if low < high {
+        let pi = partition(state, vis_arr, low, high);
+
+        quick_sort(state, vis_arr, low, pi - 1);
+        quick_sort(state, vis_arr, pi + 1, high);
+    }
+}
+
+// *****************************************************************************************
+// HEAP SORT
+//
+fn heap_sort(state: &mut visar_core::surface::State, vis_arr: &mut visar_core::vis_array::VisualArray) {
+    let mut n = vis_arr.size;
+    let mut i = n / 2;
+    
+    loop {
+        if i > 0 {
+            i -= 1;
+        } else {
+            n -= 1;
+            if n == 0 {
+                return;
+            }
+            vis_arr.swap(state, 0, n as usize);
+            
+        }
+        let mut parent = i;
+        let mut child = (i * 2) + 1;
+        
+        while child < n {
+            if (child + 1) < n && vis_arr.access(child + 1) > vis_arr.access(child) {
+                child += 1;
+            }
+            if vis_arr.access(child) > vis_arr.access(parent) {
+                vis_arr.swap(state, parent, child);
+                parent = child;
+                child = (parent * 2) + 1;
+            } else {
+                break;
+            }
+        }
+    }
+}
+// *****************************************************************************************
+// COMB SORT
+//
+fn get_gap(gap: i32) -> i32 {
+    let mut temp = gap.clone();
+    temp = (temp * 10) / 13;
+    if gap < 1 {
+        return 1;
+    }
+    temp
+}
+fn comb_sort(state: &mut visar_core::surface::State, vis_arr: &mut visar_core::vis_array::VisualArray, n: i32) {
+    let mut gap = n.clone();
+
+    let mut swapped = true;
+
+    while  gap != 1 || swapped {
+        gap = get_gap(gap);
+        swapped = false;
+        for i in 0..n-gap {
+            if vis_arr.access(i as usize) > vis_arr.access((i + gap) as usize) {
+                vis_arr.swap(state, i as usize, (i + gap) as usize);
+                swapped = true;
+            }
+        }
+    }
+}
+
+// *****************************************************************************************
+// MERGE SORT
+//
+fn merge(state: &mut visar_core::surface::State, vis_arr: &mut visar_core::vis_array::VisualArray, start: u16, mid: u16, end: u16) {
+    let mut temp: Vec<u16> = vec![0; (end - start + 1) as usize];
+    
+    let mut i = start;
+    let mut j = mid + 1;
+    let mut k = 0;
+    
+    while i <= mid && j <= end {
+        if vis_arr.access(i as usize) <= vis_arr.access(j as usize) {
+            temp[k] = vis_arr.access(i as usize);
+            k += 1;
+            i += 1;
+        } else {
+            temp[k] = vis_arr.access(j as usize);
+            k += 1;
+            j += 1;
+        }
+    }
+    
+    while i <= mid {
+        temp[k] = vis_arr.access(i as usize);
+        k += 1;
+        i += 1;
+    }
+    
+    while j <= end {
+        temp[k] = vis_arr.access(j as usize);
+        k += 1;
+        j += 1;
+    }
+    i = start;
+    while i <= end {
+        vis_arr.set(state, i as usize, temp[(i - start) as usize]);
+        i += 1;
+    }
+    
+}
+
+fn merge_sort(state: &mut visar_core::surface::State, vis_arr: &mut visar_core::vis_array::VisualArray, start: u16, end: u16) {
+    if start < end {
+        let mid = (start + end) / 2;
+        merge_sort(state, vis_arr, start, mid);
+        merge_sort(state, vis_arr, mid+1, end);
+        merge(state, vis_arr, start, mid, end);
+    }
+}
 // ******************************************************************************************
 // ODD EVEN SORT
 //
@@ -245,6 +383,10 @@ fn main() {
                             "insertion" => { insertion_sort(&mut state, &mut vis_arr); },
                             "bubble" => { bubble_sort(&mut state, &mut vis_arr); },
                             "shell" => { shell_sort(&mut state, &mut vis_arr); },
+                            "merge" => { merge_sort(&mut state, &mut vis_arr, 0, args.size-1); },
+                            "comb" => { comb_sort(&mut state, &mut vis_arr, args.size as i32); },
+                            "heap" => { heap_sort(&mut state, &mut vis_arr); },
+                            "quick" => { quick_sort(&mut state, &mut vis_arr, 0, (args.size-1) as i32); },
                             _ => { panic!("Algorithm not available"); },
                         }
                         sorted = true;
@@ -259,6 +401,10 @@ fn main() {
                             "insertion" => { insertion_sort(&mut state, &mut vis_arr); },
                             "bubble" => { bubble_sort(&mut state, &mut vis_arr); },
                             "shell" => { shell_sort(&mut state,&mut vis_arr); },
+                            "merge" => { merge_sort(&mut state, &mut vis_arr, 0, args.size-1); },
+                            "comb" => { comb_sort(&mut state, &mut vis_arr, args.size as i32); },
+                            "heap" => { heap_sort(&mut state, &mut vis_arr); },
+                            "quick" => { quick_sort(&mut state, &mut vis_arr, 0, (args.size-1) as i32); },
                             _ => { panic!("Algorithm not available"); },
                         }
                     }

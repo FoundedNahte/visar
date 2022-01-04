@@ -29,6 +29,10 @@ Algorithm Keywords (REQUIRED):
 * Shell Sort [shell]
 * Radix Sort [radix]
 * Odd Even Sort [oddeven]
+* Heap Sort [heap]
+* Comb Sort [comb]
+* Quick Sort [quick]
+* Merge Sort [merge]
 
 Size (OPTIONAL):
 * Default = 100
