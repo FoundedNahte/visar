@@ -1,6 +1,6 @@
 # Visar - A Sorting Visualizer in Rust
 
-
+![](https://github.com/FoundedNahte/visar/blob/main/example/selection.gif)
 
 ## Running
 
@@ -24,7 +24,6 @@ Size (OPTIONAL):
 * Default = 100
 
 Takes a 16-bit unsigned integer.
-##
 
 ## License
 [MIT](https://choosealicense.com/licenses/mit/)
