@@ -3,15 +3,23 @@
 ![](https://github.com/FoundedNahte/visar/blob/main/example/selection.gif)
 
 ## Running
+Installation:
 
-Running Locally:
+The executable can be downloaded in the "Releases" tab.
+
+Building Locally:
 
 ```bash
-cd visar
-cargo build --release
+cd vis
+cargo build
 cd ./target/release
-vis.exe --algo <ALGO> --size <SIZE>
+visar.exe --algo <ALGO> --size <SIZE>
 ```
+Pressing **"Space"** will start the animation  
+
+Pressing **"Space"** during the animation will **queue** another animation once the current one is done. 
+
+There is no pausing feature yet, so the animation will run until either finished or the window is closed.
 
 ## Flags
 Algorithm Keywords (REQUIRED):
