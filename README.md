@@ -11,7 +11,7 @@ Building Locally:
 
 ```bash
 cd vis
-cargo build
+cargo build --release
 cd ./target/release
 visar.exe --algo <ALGO> --size <SIZE>
 ```
