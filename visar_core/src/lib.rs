@@ -1,2 +1,2 @@
-pub mod vis_array;
 pub mod surface;
+pub mod vis_array;
