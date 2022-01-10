@@ -1,3 +1,6 @@
+//
+// MAIN SOURCE CODE THAT INCLUDES ALGORITHM FUNCTIONS AND DRIVER FUNCTION
+//
 extern crate visar_audio;
 extern crate visar_core;
 
@@ -400,7 +403,7 @@ fn main() {
         &vis_arr.indices,
     ));
 
-    let audio_controller: Option<AudioController> = match AudioController::new() {
+    let mut audio_controller: Option<AudioController> = match AudioController::new() {
         Ok(ac) => Some(ac),
         Err(e) => {
             eprintln!("{}", e);
@@ -408,12 +411,6 @@ fn main() {
         }
     };
 
-    /*
-    let mut handles = Handles { state, vis_arr, message_sender: match audio_controller {
-        Some(ac) => Some(ac.command_sender.clone()),
-        None => None,
-    }};
-    */
     let mut handles;
     if let Some(_ac) = &audio_controller {
         handles = Handles {

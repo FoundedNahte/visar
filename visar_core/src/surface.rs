@@ -1,3 +1,6 @@
+//
+// WGPU BOILERPLATE CODE
+//
 pub use bytemuck::*;
 pub use std::*;
 pub use wgpu::util::DeviceExt;

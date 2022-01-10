@@ -1,3 +1,6 @@
+//
+// AUDIO PLAYBACK CODE
+//
 use anyhow::{anyhow, Result};
 use cpal::traits::{DeviceTrait, HostTrait, StreamTrait};
 pub use crossbeam::channel::{unbounded, Receiver, Sender};

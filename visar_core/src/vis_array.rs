@@ -1,3 +1,6 @@
+//
+// VISUAL ARRAY STRUCT AND FUNCTIONS
+//
 pub use super::*;
 use rand::{thread_rng, Rng};
 use std::collections::HashMap;
@@ -33,10 +36,9 @@ pub enum Color {
 }
 
 impl VisualArray {
+    // Initialize the Visual Array
     pub fn new(arr: Vec<u16>) -> VisualArray {
         let mut vertices = Vec::<surface::Vertex>::new();
-        //let mut Vertices = [surface::Vertex; 4*arr.len()];
-        //let mut Indices = [u16; 6*arr.len()];
         let mut indices = Vec::<u16>::new();
         let mut index = 0;
         let mut height_map = HashMap::<u16, f32>::new();
@@ -115,6 +117,7 @@ impl VisualArray {
         }
     }
 
+    // Used when queueing another animation after the first one
     pub fn update(&mut self, state: &mut surface::State, arr: &Vec<u16>) {
         let mut vertices = Vec::<surface::Vertex>::new();
         let mut height_map = HashMap::<u16, f32>::new();
@@ -190,7 +193,7 @@ impl VisualArray {
 
         state.update(&self.vertices, &self.indices);
     }
-
+    // Change color of selected index in the array
     pub fn change_color(&mut self, state: &mut surface::State, index_1: usize, rect_color: Color) {
         let vertices = &mut self.vertices;
 
@@ -209,6 +212,7 @@ impl VisualArray {
         state.update(&self.vertices, &self.indices);
     }
 
+    // Returns and audibly plays the array value
     pub fn access(
         &mut self,
         message_sender: &Option<crossbeam::channel::Sender<visar_audio::sound::Message>>,
@@ -222,7 +226,6 @@ impl VisualArray {
                 ))
                 .unwrap();
                 thread::sleep(time::Duration::from_nanos(1));
-                //ms.send(visar_audio::sound::Message::Note(0.0)).unwrap();
             }
             _ => {}
         }
@@ -233,10 +236,12 @@ impl VisualArray {
     pub fn change(&mut self, index: usize, value: u16) {
         self.array[index] = value;
     }
+
     pub fn get_height(&mut self, value: u16) -> f32 {
         *self.height_map.get(&value).unwrap()
     }
-    // Changing the array and the visual array
+
+    // Changing the array and the visual array/Audio playing back of changed value
     pub fn set(
         &mut self,
         message_sender: &Option<crossbeam::channel::Sender<visar_audio::sound::Message>>,
@@ -246,7 +251,6 @@ impl VisualArray {
     ) {
         self.array[index_1] = value;
         let height = self.get_height(value);
-        self.change_color(state, index_1, Color::Red);
         {
             let vertices = &mut self.vertices;
 
@@ -255,22 +259,21 @@ impl VisualArray {
             vertices[self.indices[(((index_1 + 1) * 6) - 3) as usize] as usize].position[1] =
                 height;
         }
-        self.change_color(state, index_1, Color::White);
+        //self.change_color(state, index_1, Color::White);
         match message_sender {
             Some(ms) => {
-                //ms.send(visar_audio::sound::Message::Note(1.0)).unwrap();
                 ms.send(visar_audio::sound::Message::Frequency(
                     (1.0 / self.size as f32) * value as f32,
                 ))
                 .unwrap();
                 thread::sleep(time::Duration::from_nanos(1));
-                //ms.send(visar_audio::sound::Message::Note(0.0)).unwrap();
             }
             _ => {}
         }
         state.update(&self.vertices, &self.indices);
     }
 
+    // Visually swapping the array
     pub fn swap_vis(&mut self, state: &mut surface::State, index_1: usize, index_2: usize) {
         self.change_color(state, index_1, Color::Red);
         {
@@ -295,6 +298,8 @@ impl VisualArray {
 
         state.update(&self.vertices, &self.indices);
     }
+
+    // Swapping both internally and visually
     pub fn swap(&mut self, state: &mut surface::State, index_1: usize, index_2: usize) {
         {
             let temp = self.array[index_1 as usize];
