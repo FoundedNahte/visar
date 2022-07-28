@@ -41,5 +41,8 @@ Takes a 16-bit unsigned integer.
 
 **Large sizes may cause the animation to freeze.**
 
+## TODO
+- Currently context and rendering is done from the same thread. Different processes needs to be refactored into separate threads so there is no awaiting on each other.
+
 ## License
 [MIT](https://choosealicense.com/licenses/mit/)
